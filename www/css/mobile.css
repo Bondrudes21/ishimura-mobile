@@ -1,0 +1,349 @@
+/* ============================================================
+   Мобильная вёрстка (телефоны). Подключается последней и включается
+   только на узком экране, поэтому планшет в альбомной ориентации
+   получает привычную «компьютерную» раскладку.
+   ============================================================ */
+
+:root {
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --tabbar-h: 58px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* На сенсорных экранах нет «наведения» — убираем залипающие подсветки */
+@media (hover: none) {
+  .card:hover .cover { transform: none; box-shadow: none; border-color: var(--line); }
+  .g-item:hover img { transform: none; filter: none; }
+  .g-item .cap { opacity: 1; transform: none; }
+  .preset-card:hover, .mode-card:hover, .opds-nav:hover, .qs-theme:hover { transform: none; }
+  .au-card-play { opacity: 1; transform: none; }
+  .rd-zone:hover, .rd-zone.next:hover { background: none; }
+  .rd-side .entry .del { opacity: 1; }
+  #cursor-glow { display: none !important; }
+}
+
+/* Окна в Android нет — кнопки «свернуть/развернуть/закрыть» не нужны нигде */
+:root[data-platform='android'] .win-controls,
+:root[data-platform='web'] .win-controls { display: none; }
+.titlebar { -webkit-app-region: none; }
+
+@media (max-width: 820px), (max-height: 500px) and (pointer: coarse) {
+  html, body { overscroll-behavior: none; }
+  body { font-size: 14px; }
+  #app { height: 100dvh; height: 100svh; grid-template-rows: auto 1fr; }
+  @supports (height: 100dvh) { #app { height: 100dvh; } }
+
+  /* ---------- Заголовок ---------- */
+  .titlebar {
+    height: calc(50px + var(--safe-t));
+    padding: var(--safe-t) calc(6px + var(--safe-r)) 0 calc(10px + var(--safe-l));
+    gap: 8px;
+  }
+  #nav-toggle { display: none; }
+  .brand { gap: 8px; min-width: 0; flex: 1; }
+  .brand-name { font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
+  .tb-drag { display: none; }
+  .tb-mode { height: 32px; padding: 4px 10px; }
+  .tb-mode span { max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
+  .tb-signal { padding: 8px; }
+  .tb-signal > span:not(.signal-bars) { display: none; }
+  .tb-btn { width: 40px; height: 40px; }
+  .tb-btn svg { width: 20px; height: 20px; }
+  .statusbar { display: none !important; }
+
+  /* ---------- Нижнее меню вместо боковой панели (при любых настройках раскладки) ---------- */
+  .shell, [data-nav] .shell {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr auto !important;
+    grid-template-areas: 'view' 'nav' !important;
+  }
+  .nav, [data-nav] .nav {
+    display: flex !important;
+    position: relative !important; inset: auto !important; width: auto !important;
+    flex-direction: row; align-items: stretch; gap: 0;
+    padding: 0 var(--safe-r) var(--safe-b) var(--safe-l);
+    min-height: calc(var(--tabbar-h) + var(--safe-b));
+    border: 0; border-top: var(--bw) solid var(--line);
+    overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none;
+    box-shadow: 0 -10px 30px #0006;
+    z-index: 6;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-label, .nav-spacer, .nav-indicator { display: none !important; }
+  .nav-item, [data-nav-style] .nav-item {
+    flex: 1 0 auto; min-width: 58px;
+    flex-direction: column; justify-content: center; gap: 3px;
+    padding: 6px 4px; border: 0; border-radius: 0;
+    font-size: 10px; letter-spacing: .02em; text-align: center;
+    white-space: nowrap;
+  }
+  .nav-item svg, [data-nav-style='labels'] .nav-item svg { display: block; width: 22px; height: 22px; }
+  [data-nav-style='icons'] .nav-item span:not(.badge) { display: block; }
+  .nav-item span:not(.badge) { max-width: 76px; overflow: hidden; text-overflow: ellipsis; }
+  .nav-item.active { background: none; border: 0; }
+  .nav-item.active::before {
+    display: block !important; left: 22%; right: 22%; top: 0; bottom: auto; width: auto; height: 2px;
+  }
+  .nav-item .badge, [data-nav-style='icons'] .nav-item .badge { position: absolute; top: 4px; left: calc(50% + 6px); right: auto; margin: 0; }
+
+  /* Мини-плеер аудиокниги — плашка над нижним меню */
+  .nav .au-mini {
+    position: fixed !important; left: 8px; right: 8px; bottom: calc(var(--tabbar-h) + var(--safe-b) + 8px);
+    margin: 0 !important; padding: 8px 10px !important; z-index: 20;
+    display: grid !important; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: center;
+    background: color-mix(in srgb, var(--bg-2) 94%, transparent) !important;
+    backdrop-filter: blur(12px);
+    border: var(--bw) solid var(--line-strong) !important; border-radius: 12px;
+    box-shadow: 0 10px 30px #000b;
+  }
+  .nav .au-mini > .p-top:first-child { grid-column: 1 / -1; }
+  .nav .au-mini .au-mini-bar { display: block !important; grid-column: 1 / -1; order: 3; }
+  .nav .au-mini > .p-top:last-child { grid-column: 1 / -1; justify-content: center; gap: 14px; }
+  .nav .au-mini .au-mini-time { display: inline !important; margin-left: 4px; }
+  .nav .au-mini .au-mini-text, .nav .au-mini .btn.ghost { display: initial !important; }
+  .nav .au-mini .au-mini-text { display: grid !important; }
+  :root:has(.nav .au-mini) .view .page { padding-bottom: 150px; }
+
+  /* ---------- Страницы ---------- */
+  .view { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+  .empty { padding: 40px 6px; }
+  .empty > div:last-child { flex-wrap: wrap; }
+  .empty .orb-lg { --s: 80px; }
+  .page { padding: 16px calc(14px + var(--safe-r)) 40px calc(14px + var(--safe-l)); }
+  .page-head { gap: 12px; margin-bottom: 18px; padding-bottom: 12px; }
+  .page-head h1 { font-size: 24px; }
+  .page-head .eyebrow { font-size: 10px; }
+  .page-head .tools { margin-left: 0; width: 100%; }
+  .page-head .tools .search { flex: 1 1 100%; }
+  .page-head .tools .select { width: auto !important; flex: 1; }
+  .page-head::after, .page-head::before { max-width: 100%; }
+  h2.sec { margin: 22px 0 12px; font-size: 12px; }
+  .search { min-width: 0; }
+
+  /* Крупнее элементы под палец */
+  .btn { padding: 10px 14px; min-height: 40px; }
+  .btn.icon { padding: 9px; min-width: 40px; }
+  .chip { padding: 7px 12px; }
+  .input, .select, .textarea { font-size: 16px; padding: 10px 12px; } /* 16px — iPhone не приближает поле */
+  .toggle .knob { width: 44px; height: 24px; }
+  .toggle .knob::after { width: 18px; height: 18px; }
+  .toggle input:checked + .knob::after { transform: translateX(20px); }
+  input[type='range'] { height: 30px; }
+  input[type='range']::-webkit-slider-thumb { width: 22px; height: 22px; margin-top: -9px; }
+
+  /* Плитки: две колонки */
+  .cards { grid-template-columns: repeat(auto-fill, minmax(min(var(--card-w, 150px), 46%), 1fr)); gap: 18px 12px; }
+  .card h3 { font-size: 13px; }
+  .card .meta { font-size: 10px; gap: 6px; }
+  .rows { gap: 6px; }
+  .row { grid-template-columns: 48px 1fr; gap: 12px; padding: 8px; }
+  .row .cover { width: 48px; }
+  .row .right { display: none; }
+  .row h3 { font-size: 13px; }
+
+  .continue { grid-template-columns: 90px 1fr; gap: 14px; padding: 12px; }
+  .continue .cover { width: 90px; }
+  .continue h3 { font-size: 18px; }
+  .series-hero { grid-template-columns: 1fr; gap: 16px; }
+  .series-hero .cover { max-width: 180px; }
+  .series-hero h1 { font-size: 26px; }
+  .chapter { grid-template-columns: 38px 1fr; padding: 12px; }
+  .chapter > :nth-child(3) { grid-column: 1 / -1; justify-self: start; }
+  .shelf { padding: 16px 10px 0; min-height: 200px; overflow-x: auto; flex-wrap: nowrap; }
+  .spine { --h: 180px; width: 40px; flex: none; }
+
+  /* Галерея и просмотр картинок */
+  .masonry { columns: 2 150px; column-gap: 10px; }
+  .g-item { margin-bottom: 10px; }
+  .album-cards { grid-template-columns: 1fr 1fr; }
+  .lightbox, .lightbox.noinfo { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  .lb-stage { touch-action: none; }
+  .lb-stage img { max-width: 100%; max-height: 100%; }
+  .lb-info { max-height: 36vh; padding: 14px 16px calc(14px + var(--safe-b)); border-left: 0; border-top: var(--bw) solid var(--line); }
+  .lb-tools { top: calc(10px + var(--safe-t)); right: 10px; }
+  .lb-nav.prev { left: 6px; } .lb-nav.next { right: 6px; }
+
+  /* Хроника */
+  .timeline { padding-left: 28px; }
+  .timeline::before { left: 8px; }
+  .t-event::before { left: -26px; }
+  .t-year { position: static; width: auto; text-align: left; font-size: 18px; margin-bottom: 4px; }
+  .t-event { padding: 12px 14px; }
+  .tl-period { margin: 24px 0 14px -28px; padding: 12px 12px 12px 28px; }
+  .tl-period-years { position: static; width: auto; text-align: left; padding: 0 0 4px; }
+  .tl-scale { height: 380px; }
+  .tl-detail { grid-template-columns: 1fr; gap: 10px; padding: 14px 16px; }
+  .tl-d-year { font-size: 32px; }
+  .tl-hint { display: none; }
+  .tl-label { width: 150px; }
+
+  /* Кодекс: список сверху, статья ниже */
+  .codex { grid-template-columns: 1fr; }
+  .codex-side { position: static; }
+  .codex-list { max-height: 34vh; }
+  .article { padding: 18px 16px; }
+  .article h1 { font-size: 24px; }
+  .article .body { font-size: 16px; }
+  .article figure { float: none; width: auto; margin: 0 0 16px; }
+
+  /* Карта */
+  .map-wrap { height: calc(100dvh - 210px - var(--safe-t) - var(--safe-b)); min-height: 300px; touch-action: none; }
+  .map-card { left: 8px; right: 8px; bottom: 8px; width: auto; }
+
+  /* Конфигуратор: вкладки — горизонтальная лента */
+  .settings { grid-template-columns: 1fr; gap: 12px; }
+  .settings-tabs { position: sticky; top: 0; z-index: 4; display: flex; overflow-x: auto; padding: 6px; gap: 4px; scrollbar-width: none; }
+  .settings-tabs::-webkit-scrollbar { display: none; }
+  .s-tab { flex: none; white-space: nowrap; padding: 9px 12px; }
+  .s-body { padding: 16px 14px; min-height: 0; }
+  .s-row { grid-template-columns: 1fr; gap: 8px; padding: 12px 0; }
+  .s-row .ctl { flex-wrap: wrap; }
+  .color-grid, .presets-mini, .theme-grid { grid-template-columns: 1fr; }
+  .sound-row { grid-template-columns: 1fr auto auto; }
+  .sound-row > :first-child { grid-column: 1 / -1; }
+  .cheat { columns: 1; }
+  .css-editor { min-height: 260px; font-size: 12px; }
+
+  /* Быстрые настройки — шторка снизу */
+  .qs {
+    top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 82dvh;
+    border-radius: 18px 18px 0 0; padding-bottom: var(--safe-b);
+    transform: translateY(105%);
+  }
+  .qs.open { transform: none; }
+  .qs-slider { grid-template-columns: 110px 1fr; }
+
+  /* ---------- Слои: модалки как нижние шторки, поповеры по ширине экрана ---------- */
+  .modal-back { place-items: end center; }
+  .modal, .modal.wide {
+    width: 100vw; max-height: calc(100dvh - 30px - var(--safe-t));
+    padding: 20px calc(16px + var(--safe-r)) calc(20px + var(--safe-b)) calc(16px + var(--safe-l));
+    border-radius: 18px 18px 0 0; border-bottom: 0;
+    animation: sheet-in calc(320ms / var(--speed)) cubic-bezier(.2, .8, .2, 1) both;
+  }
+  .modal h2 { font-size: 18px; }
+  .modal .actions { position: sticky; bottom: calc(-20px - var(--safe-b)); margin: 20px -16px calc(-20px - var(--safe-b)); padding: 12px 16px calc(12px + var(--safe-b)); background: var(--bg-2); border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .modal .actions .btn { flex: 1; }
+  .modal::before { content: ''; display: block; width: 40px; height: 4px; border-radius: 4px; background: var(--line-strong); margin: -8px auto 14px; }
+  @keyframes sheet-in { from { transform: translateY(40%); opacity: 0; } }
+
+  .popover { max-width: calc(100vw - 16px); max-height: 70dvh; overflow: auto; }
+  .mode-menu { width: calc(100vw - 16px); }
+  .menu-item { padding: 12px 10px; }
+
+  #toasts { left: 10px; right: 10px; top: calc(56px + var(--safe-t)); bottom: auto; }
+  .toast { width: auto; }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(-16px); } }
+  @keyframes toast-out { to { opacity: 0; transform: translateY(-16px); } }
+
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+
+  /* ---------- Первый запуск ---------- */
+  .firstrun { padding: calc(24px + var(--safe-t)) 16px calc(24px + var(--safe-b)); place-items: start center; }
+  .firstrun-inner { gap: 18px; }
+  .firstrun h1 { font-size: 26px; }
+  .mode-cards { grid-template-columns: 1fr; gap: 10px; }
+  .mode-card.big { padding: 16px; grid-template-columns: 40px 1fr; }
+  .mode-card.big svg { width: 30px; height: 30px; }
+  .mode-card.big b { font-size: 17px; }
+  .preset-cards { grid-template-columns: 1fr; gap: 14px; }
+  .mock { height: 150px; }
+
+  /* ---------- Библиотека ---------- */
+  .lib-filters { padding: 8px 10px; gap: 8px; }
+  .lib-filters .select { min-width: 0; max-width: none; flex: 1 1 45%; }
+  .lib-filters .chips { width: 100%; }
+  .book-detail { grid-template-columns: 1fr; gap: 14px; text-align: center; }
+  .book-detail > .cover { width: 120px; justify-self: center; }
+  .book-detail h2 { font-size: 19px !important; }
+  .book-detail .chips, .book-detail .bd-acts { justify-content: center; }
+  .book-detail .bd-ann { text-align: left; max-height: 30vh; }
+  .bd-acts .btn { flex: 1 1 auto; }
+  .opds-book { grid-template-columns: 70px 1fr; gap: 12px; padding: 10px; }
+  .opds-book .cover { width: 70px; }
+
+  /* Аудиокниги */
+  .au-hero { grid-template-columns: 1fr; gap: 20px; justify-items: center; text-align: center; }
+  .au-cover-wrap { width: min(240px, 70vw); }
+  .au-main { width: 100%; }
+  .au-main h1 { font-size: 22px; }
+  .au-controls { justify-content: center; }
+  .au-extra { justify-content: center; }
+  .au-time { grid-template-columns: 54px 1fr 54px; }
+  .au-track { grid-template-columns: 30px 1fr 60px; padding: 11px 8px; }
+  .au-track > :nth-child(3) { display: none; }
+
+  /* Мои книги */
+  .wr-top { padding: 6px 8px; flex-wrap: wrap; }
+  .wr-book-title { font-size: 15px; }
+  .wr-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .wr-side { margin: 8px 8px 0; max-height: 30dvh; }
+  .wr-main { padding: 8px; }
+  .wr-toolbar { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+  .wr-sheet { padding: 20px 16px 40vh; }
+
+  /* Каталоги и встроенный браузер */
+  .opds-nav { padding: 12px; }
+  .crumb { max-width: 160px; }
+  .wb-bar { padding: 6px; gap: 2px; flex-wrap: wrap; }
+  .wb-addr { order: 10; flex-basis: 100%; margin-top: 4px; }
+  .wb-start { padding: 18px; place-items: start center; }
+  .wb-dl { width: calc(100vw - 32px); }
+
+  /* ---------- Читалка ---------- */
+  /* При чтении текст занимает весь экран: без заголовка приложения и нижнего меню */
+  :root[data-route='reader'] .titlebar, :root[data-route='pdf'] .titlebar,
+  :root[data-route='reader'] .nav, :root[data-route='pdf'] .nav { display: none !important; }
+  :root[data-route='reader'] #app, :root[data-route='pdf'] #app { grid-template-rows: 1fr; }
+  .rd-paged { touch-action: none; }
+  .reader-bar { padding: calc(6px + var(--safe-t)) 6px 6px; gap: 2px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .reader-bar::-webkit-scrollbar { display: none; }
+  .reader-bar .title { min-width: 110px; }
+  .reader-bar .title b { font-size: 12px; }
+  .reader-bar .btn.icon { min-width: 38px; padding: 8px; }
+  .rd-scroll .rd-article { padding: 26px calc(18px + var(--safe-r)) 40vh calc(18px + var(--safe-l)); }
+  .rd-paged { inset: 14px 0 10px; }
+  .rd-zone { width: 30%; }
+  .rd-head h1 { font-size: 1.8em; }
+  .reader-foot { padding: 8px 14px calc(8px + var(--safe-b)); gap: 10px; }
+  .rd-side { width: 100%; max-width: 100vw; top: var(--safe-t); padding-bottom: var(--safe-b); }
+  .rd-search { left: 8px; right: 8px; top: calc(8px + var(--safe-t)); }
+  .rd-search .input { width: auto; flex: 1; }
+  .typo { width: calc(100vw - 16px); }
+  .typo .s-row { grid-template-columns: 96px 1fr; }
+  .rd-article blockquote.epigraph { margin-left: 15%; }
+  .rd-article .poem { margin-left: 1em; }
+
+  /* PDF */
+  .pdf-scroll { padding: 10px 0 40px; gap: 10px; touch-action: pan-x pan-y pinch-zoom; }
+
+  /* ---------- Заставка ---------- */
+  .cryo-corner { font-size: 9px !important; max-width: 46vw; }
+  .cryo-corner.tl { top: calc(14px + var(--safe-t)) !important; left: 14px !important; }
+  .cryo-corner.tr { display: none !important; }
+  .cryo-vitals { left: 14px !important; right: 14px !important; bottom: calc(40px + var(--safe-b)) !important; transform: none !important; flex-wrap: wrap; justify-content: center; gap: 10px 18px !important; }
+  .cryo-vitals canvas { width: 100% !important; max-width: 360px; height: auto !important; }
+  .cryo-voice { width: calc(100vw - 32px) !important; }
+  .cryo-voice p { font-size: 15px !important; }
+  .cryo-logo { font-size: 18px !important; white-space: nowrap; }
+  .cryo-skip { bottom: calc(10px + var(--safe-b)) !important; font-size: 10px !important; }
+  .nb-title { font-size: 28px; }
+}
+
+/* Совсем узкие экраны (старые и компактные телефоны) */
+@media (max-width: 380px) {
+  .brand .orb { display: none; }
+  .tb-mode span { display: none; }
+  .nav-item { min-width: 52px; font-size: 9px; }
+}
+
+/* Горизонтальный телефон: меню тоньше, без подписей */
+@media (max-width: 950px) and (max-height: 500px) {
+  :root { --tabbar-h: 44px; }
+  .nav-item span:not(.badge) { display: none !important; }
+  .titlebar { height: calc(42px + var(--safe-t)); }
+}

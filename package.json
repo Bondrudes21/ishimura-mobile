@@ -1,0 +1,47 @@
+{
+  "name": "ishimura-mobile",
+  "productName": "Архив Ишимуры",
+  "version": "1.0.0",
+  "description": "Мобильная версия «Архива Ишимуры»: Android (APK) и iPhone (PWA)",
+  "author": "Bondrudes21",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vendor": "node scripts/vendor.mjs",
+    "serve": "node scripts/serve.mjs",
+    "sync": "npm run vendor && npx cap sync android",
+    "icons": "node scripts/icons.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.4",
+    "@fontsource/exo-2": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/literata": "^5.3.0",
+    "@fontsource/oswald": "^5.3.0",
+    "@fontsource/play": "^5.3.0",
+    "@fontsource/pt-mono": "^5.3.0",
+    "@fontsource/pt-serif": "^5.3.0",
+    "@fontsource/rubik": "^5.3.0",
+    "@fontsource/russo-one": "^5.3.0",
+    "@fontsource/spectral": "^5.3.0",
+    "@fontsource/unbounded": "^5.3.0",
+    "7z-wasm": "^1.2.0",
+    "docx": "^9.8.1",
+    "dompurify": "^3.4.16",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
+    "music-metadata": "^12.0.0",
+    "pdfjs-dist": "^6.4.299"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "esbuild": "^0.28.2",
+    "sharp": "^0.35.5"
+  }
+}

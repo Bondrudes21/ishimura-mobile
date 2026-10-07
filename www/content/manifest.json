@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "revision": 3,
+  "updated": "2026-10-04T22:44:21.372Z",
+  "series": [],
+  "stories": [
+    {
+      "id": "ishimura",
+      "title": "Ишимура",
+      "subtitle": "Начало",
+      "series": null,
+      "chapter": null,
+      "order": 1,
+      "year": "2871",
+      "summary": "2871 год. Колониальный корабль «Ишимура» на орбите Тиамата II. Экипаж выходит из криосна, а до высадки первой экспедиции остаются считанные месяцы.",
+      "cover": null,
+      "file": "stories/ishimura/text.html",
+      "words": 3963,
+      "tags": [],
+      "published": "2026-10-04T21:04:39.616Z",
+      "motif": "ship"
+    },
+    {
+      "id": "tiamat",
+      "title": "Тиамат",
+      "subtitle": "Продолжение",
+      "series": null,
+      "chapter": null,
+      "order": 2,
+      "year": "3110",
+      "summary": "Двести лет спустя. Мегаполис «Веран», радиорубка подземного узла связи — и сигнал с «Ишимуры», который меняет всё.",
+      "cover": null,
+      "file": "stories/tiamat/text.html",
+      "words": 9985,
+      "tags": [],
+      "published": "2026-10-04T21:04:40.415Z",
+      "motif": "planet"
+    }
+  ],
+  "gallery": {
+    "albums": [],
+    "items": []
+  },
+  "music": [],
+  "codex": {
+    "categories": [],
+    "entries": []
+  },
+  "timeline": [
+    {
+      "id": "t2810",
+      "year": "2810",
+      "title": "Исследовательская группа обнаруживает систему Тиамат",
+      "text": "",
+      "story": null
+    },
+    {
+      "id": "t2830",
+      "year": "2830",
+      "title": "Набор колонистов и отправка «Ишимуры» к Тиамату II",
+      "text": "",
+      "story": null
+    },
+    {
+      "id": "t2870",
+      "year": "2870",
+      "title": "«Ишимура» выходит на орбиту Тиамата II",
+      "text": "",
+      "story": "ishimura"
+    },
+    {
+      "id": "t2871",
+      "year": "2871",
+      "title": "Начало колонизации Тиамата II",
+      "text": "",
+      "story": "ishimura"
+    },
+    {
+      "id": "t3110",
+      "year": "3110",
+      "title": "Потеря связи с Террой",
+      "text": "",
+      "story": "tiamat"
+    },
+    {
+      "id": "t3112",
+      "year": "3112",
+      "title": "Военный переворот Лазарева",
+      "text": "",
+      "story": "tiamat"
+    },
+    {
+      "id": "t3116",
+      "year": "3116",
+      "title": "Начало гражданской войны на Тиамате II",
+      "text": "",
+      "story": "tiamat"
+    },
+    {
+      "id": "t3136",
+      "year": "3136",
+      "title": "Начало Семивековой войны на Тиамате II",
+      "text": "",
+      "story": "tiamat"
+    },
+    {
+      "id": "t3782",
+      "year": "3782",
+      "title": "Начало объединительных войн {{unifier.gen}}",
+      "text": "",
+      "story": null
+    },
+    {
+      "id": "t3810",
+      "year": "3810",
+      "title": "Официальное окончание объединительных войн на Тиамате II",
+      "text": "",
+      "story": null
+    },
+    {
+      "id": "t3874",
+      "year": "3874",
+      "title": "Тиамат набирает силу и выходит за пределы своей звёздной системы",
+      "text": "",
+      "story": null
+    }
+  ],
+  "map": null,
+  "files": {
+    "stories/ishimura/text.html": "ac045ff2fc6669180847d33a8d5c47048f333019",
+    "stories/tiamat/text.html": "2ce450c21900182608830bd1013f6531468cd534"
+  },
+  "terms": {
+    "unifier": {
+      "nom": "Объединитель",
+      "gen": "Объединителя",
+      "note": "Временная заглушка"
+    }
+  },
+  "periods": [
+    {
+      "id": "p-colonization",
+      "from": 2871,
+      "to": 3110,
+      "title": "Колонизация",
+      "note": "≈ 200 лет колонизации"
+    },
+    {
+      "id": "p-civil",
+      "from": 3116,
+      "to": 3136,
+      "title": "Гражданская война",
+      "note": "20 лет войны"
+    },
+    {
+      "id": "p-seven",
+      "from": 3136,
+      "to": 3782,
+      "title": "Семивековая война",
+      "note": "≈ 600 лет войны"
+    },
+    {
+      "id": "p-unifier",
+      "from": 3810,
+      "to": 3874,
+      "title": "Правление {{unifier.gen}}",
+      "note": "{{unifier}} правит Тиаматом II 64 года, затем исчезает"
+    }
+  ]
+}

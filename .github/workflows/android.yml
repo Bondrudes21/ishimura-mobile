@@ -1,0 +1,99 @@
+# Сборка APK для Android.
+#  • push в main — проверочная сборка (APK во вкладке Actions → Artifacts);
+#  • тег vX.Y.Z — релиз: APK прикрепляется к GitHub Releases, ссылка для телефонов:
+#    https://github.com/Bondrudes21/ishimura-mobile/releases/latest
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Зависимости и веб-часть
+        run: |
+          npm ci
+          npm run vendor
+          npx cap sync android
+
+      - name: Версия
+        id: ver
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then V="${GITHUB_REF#refs/tags/v}"; else V="$(node -p "require('./package.json').version")"; fi
+          IFS=. read -r MA MI PA <<< "$V"
+          echo "name=$V" >> "$GITHUB_OUTPUT"
+          echo "code=$(( ${MA:-0} * 10000 + ${MI:-0} * 100 + ${PA:-0} ))" >> "$GITHUB_OUTPUT"
+
+      - name: Ключ подписи
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Секрет ANDROID_KEYSTORE_BASE64 не задан — APK подписан отладочным ключом"
+          fi
+
+      - name: Сборка APK
+        working-directory: android
+        env:
+          VERSION_NAME: ${{ steps.ver.outputs.name }}
+          VERSION_CODE: ${{ steps.ver.outputs.code }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          set -o pipefail
+          ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          mkdir -p ../out
+          cp app/build/outputs/apk/release/app-release.apk "../out/Ishimura-Archive-${VERSION_NAME}.apk"
+
+      # Ошибки компиляции — в аннотации (видны без входа в GitHub через API check-runs)
+      - name: Ошибки сборки
+        if: failure()
+        run: |
+          [ -f "$RUNNER_TEMP/gradle.log" ] || exit 0
+          grep -E "error:|e: |What went wrong|Could not|FAILED|Exception" "$RUNNER_TEMP/gradle.log" | head -40 | while IFS= read -r line; do
+            echo "::error::$line"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: out/*.apk
+
+      - name: Релиз
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*.apk
+          name: Архив Ишимуры ${{ steps.ver.outputs.name }}
+          body: |
+            **Android:** скачайте `Ishimura-Archive-${{ steps.ver.outputs.name }}.apk` ниже и откройте его на телефоне.
+            Если Android спросит — разрешите установку из этого источника.
+
+            **iPhone:** откройте в Safari https://bondrudes21.github.io/ishimura-mobile/ → «Поделиться» → «На экран „Домой“».

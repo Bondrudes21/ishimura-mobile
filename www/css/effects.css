@@ -1,0 +1,129 @@
+/* ============ Фон ============ */
+:root { --scan: 0.3; --grain: 0.12; --vignette: 0.45; --bg-opacity: 1; --bg-blur: 0px; --bg-dim: 0.4; }
+
+#fx-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+#fx-bg > .bg-media {
+  position: absolute; inset: calc(var(--bg-blur) * -2);
+  width: calc(100% + var(--bg-blur) * 4); height: calc(100% + var(--bg-blur) * 4);
+  object-fit: cover;
+  opacity: var(--bg-opacity);
+  filter: blur(var(--bg-blur));
+}
+#fx-bg::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: var(--bg-dim); }
+#fx-bg[data-type='none']::after { display: none; }
+
+/* Процедурные фоны */
+#fx-bg[data-type='grid'] {
+  background:
+    linear-gradient(var(--accent-a08) 1px, transparent 1px) 0 0 / 42px 42px,
+    linear-gradient(90deg, var(--accent-a08) 1px, transparent 1px) 0 0 / 42px 42px,
+    radial-gradient(ellipse at 50% 120%, var(--accent-a15), transparent 60%);
+  opacity: var(--bg-opacity);
+}
+#fx-bg[data-type='grid']::after { display: none; }
+#fx-bg[data-type='stars'] { opacity: var(--bg-opacity); }
+#fx-bg[data-type='stars']::after { display: none; }
+#fx-bg[data-type='stars'] .stars {
+  position: absolute; inset: -50%;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, var(--text), transparent),
+    radial-gradient(1px 1px at 120px 80px, var(--accent-2), transparent),
+    radial-gradient(1.5px 1.5px at 200px 160px, var(--text), transparent),
+    radial-gradient(1px 1px at 300px 40px, var(--dim), transparent),
+    radial-gradient(1px 1px at 360px 220px, var(--text), transparent),
+    radial-gradient(2px 2px at 80px 260px, var(--accent), transparent);
+  background-size: 400px 300px;
+  animation: drift calc(240s / var(--speed)) linear infinite;
+  opacity: .6;
+}
+#fx-bg[data-type='stars'] .planet {
+  position: absolute; right: -12vmax; bottom: -22vmax; width: 60vmax; height: 60vmax; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 35%, var(--bg-3)), var(--bg) 70%);
+  box-shadow: 0 0 120px var(--accent-a15), inset -40px -40px 120px #000;
+  opacity: .55;
+}
+@keyframes drift { to { transform: translate(400px, 300px); } }
+
+#fx-bg[data-type='radar']::after { display: none; }
+#fx-bg[data-type='radar'] { opacity: var(--bg-opacity); background: repeating-radial-gradient(circle at 70% 60%, transparent 0 60px, var(--accent-a08) 60px 61px); }
+#fx-bg[data-type='radar'] .sweep {
+  position: absolute; left: 70%; top: 60%; width: 140vmax; height: 140vmax; margin: -70vmax 0 0 -70vmax;
+  background: conic-gradient(from 0deg, var(--accent-a15), transparent 50deg);
+  border-radius: 50%;
+  animation: spin calc(9s / var(--speed)) linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============ Наложения ============ */
+#fx-overlay { position: fixed; inset: 0; z-index: 400; pointer-events: none; }
+#fx-overlay > div { position: absolute; inset: 0; }
+.fx-scan {
+  opacity: var(--scan);
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, .55) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+.fx-scan::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 120px; top: -120px;
+  background: linear-gradient(to bottom, transparent, var(--accent-a08), transparent);
+  animation: scan-roll calc(7s / var(--speed)) linear infinite;
+  opacity: calc(var(--scan) * 1.5);
+}
+@keyframes scan-roll { to { transform: translateY(calc(100vh + 120px)); } }
+.fx-grain {
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  animation: grain calc(.6s / var(--speed)) steps(4) infinite;
+}
+@keyframes grain { 25% { background-position: 40px 20px; } 50% { background-position: -30px 60px; } 75% { background-position: 70px -40px; } }
+.fx-vignette { background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, var(--vignette)) 100%); }
+
+[data-flicker='on'] #app { animation: flicker calc(6s / var(--speed)) infinite; }
+@keyframes flicker {
+  0%, 100% { opacity: 1; } 92% { opacity: 1; } 92.5% { opacity: .86; } 93% { opacity: 1; } 96% { opacity: .94; } 96.4% { opacity: 1; }
+}
+[data-chroma='on'] .page-head h1, [data-chroma='on'] .brand-name b {
+  text-shadow: -1px 0 color-mix(in srgb, var(--danger) 70%, transparent), 1px 0 color-mix(in srgb, var(--accent-2) 70%, transparent), var(--glow);
+}
+
+/* ============ Декор: скобки терминала ============ */
+[data-deco='brackets'] .panel::before, [data-deco='brackets'] .panel::after,
+[data-deco='brackets'] .modal::before, [data-deco='brackets'] .modal::after {
+  content: ''; position: absolute; width: 12px; height: 12px; pointer-events: none;
+  border: 2px solid var(--accent); opacity: .8;
+}
+[data-deco='brackets'] .panel::before, [data-deco='brackets'] .modal::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+[data-deco='brackets'] .panel::after, [data-deco='brackets'] .modal::after { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+[data-deco='brackets'] .modal { position: relative; }
+[data-deco='brackets'] .page-head::after {
+  content: '// ' attr(data-code); position: absolute; right: 0; bottom: -18px;
+  font-size: 10px; letter-spacing: .2em; color: var(--dim); opacity: .6;
+}
+
+/* ============ Декор: предупреждающие полосы (док) ============ */
+[data-deco='hazard'] .page-head { border-bottom: 0; padding-bottom: 22px; }
+[data-deco='hazard'] .page-head::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
+  background: repeating-linear-gradient(-45deg, var(--accent-2) 0 12px, var(--bg) 12px 24px);
+  opacity: .9;
+}
+[data-deco='hazard'] .panel { border-top: 3px solid var(--accent); }
+[data-deco='hazard'] .titlebar { border-bottom: 2px solid var(--accent); }
+[data-deco='hazard'] .modal { border-top: 6px solid transparent; border-image: repeating-linear-gradient(-45deg, var(--accent-2) 0 10px, var(--bg) 10px 20px) 6; border-image-width: 6px 0 0 0; }
+[data-deco='hazard'] .page-head::after {
+  content: attr(data-code); position: absolute; right: 0; top: 0;
+  font: 700 11px var(--f-ui); letter-spacing: .14em; padding: 3px 8px; background: var(--accent); color: var(--bg);
+}
+
+/* ============ Декор: грифы (бункер) ============ */
+[data-deco='stamps'] .page-head { border-bottom: 3px double var(--line-strong); }
+[data-deco='stamps'] .page-head::after {
+  content: attr(data-stamp); position: absolute; right: 6px; top: -4px;
+  font: 700 13px var(--f-head); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--danger); border: 2px solid var(--danger); padding: 4px 12px;
+  transform: rotate(-4deg); opacity: .7;
+}
+[data-deco='stamps'] .panel { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-2) 12%, transparent); }
+[data-deco='stamps'] .panel::before {
+  content: ''; position: absolute; left: 10px; right: 10px; top: 0; height: 2px; background: linear-gradient(90deg, var(--accent-2), transparent); opacity: .6;
+}

@@ -1,0 +1,144 @@
+/* ============ Плавность по умолчанию ============ */
+:root { --ease: cubic-bezier(.2, .8, .2, 1); --ease-spring: cubic-bezier(.3, 1.35, .4, 1); }
+.view { scroll-behavior: smooth; }
+.btn, .chip, .nav-item, .card, .row, .chapter, .g-item, .panel, .input, .select, .s-tab, .codex-link, .menu-item {
+  transition-timing-function: var(--ease);
+}
+.btn { transition-duration: calc(180ms / var(--speed)); }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(1px) scale(.98); }
+.chip { transition: all calc(200ms / var(--speed)) var(--ease); }
+.chip:active { transform: scale(.95); }
+.row, .chapter, .search-hit { transition: border-color var(--t-med), background var(--t-med), transform var(--t-med) var(--ease); }
+.row:hover, .chapter:hover, .search-hit:hover { transform: translateX(4px); }
+.card .cover { transition: transform calc(380ms / var(--speed)) var(--ease), box-shadow calc(380ms / var(--speed)) var(--ease), border-color var(--t-med); }
+
+/* ============ Переходы между разделами (View Transitions) ============ */
+#view { view-transition-name: main-view; }
+:root[data-vt='view']::view-transition-old(root),
+:root[data-vt='view']::view-transition-new(root) { animation: none; }
+::view-transition-group(main-view) { animation-duration: calc(460ms / var(--speed)); animation-timing-function: var(--ease); }
+
+:root[data-vt='view'][data-view-anim='fade']::view-transition-old(main-view) { animation: vt-out calc(200ms / var(--speed)) ease both; }
+:root[data-vt='view'][data-view-anim='fade']::view-transition-new(main-view) { animation: vt-in calc(420ms / var(--speed)) var(--ease) calc(60ms / var(--speed)) both; }
+
+:root[data-vt='view'][data-view-anim='slide']::view-transition-old(main-view) { animation: vt-slide-out calc(320ms / var(--speed)) var(--ease) both; }
+:root[data-vt='view'][data-view-anim='slide']::view-transition-new(main-view) { animation: vt-slide-in calc(460ms / var(--speed)) var(--ease) both; }
+:root[data-vt='view'][data-view-anim='slide'][data-vt-dir='back']::view-transition-old(main-view) { animation-name: vt-slide-out-back; }
+:root[data-vt='view'][data-view-anim='slide'][data-vt-dir='back']::view-transition-new(main-view) { animation-name: vt-slide-in-back; }
+
+:root[data-vt='view'][data-view-anim='zoom']::view-transition-old(main-view) { animation: vt-zoom-out calc(280ms / var(--speed)) var(--ease) both; }
+:root[data-vt='view'][data-view-anim='zoom']::view-transition-new(main-view) { animation: vt-zoom-in calc(480ms / var(--speed)) var(--ease) both; }
+
+:root[data-vt='view'][data-view-anim='glitch']::view-transition-old(main-view) { animation: vt-out calc(160ms / var(--speed)) steps(3) both; }
+:root[data-vt='view'][data-view-anim='glitch']::view-transition-new(main-view) { animation: vt-glitch calc(520ms / var(--speed)) linear both; }
+
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); filter: blur(3px); } }
+@keyframes vt-slide-out { to { opacity: 0; transform: translateX(-48px); } }
+@keyframes vt-slide-in { from { opacity: 0; transform: translateX(64px); } }
+@keyframes vt-slide-out-back { to { opacity: 0; transform: translateX(48px); } }
+@keyframes vt-slide-in-back { from { opacity: 0; transform: translateX(-64px); } }
+@keyframes vt-zoom-out { to { opacity: 0; transform: scale(.96); filter: blur(4px); } }
+@keyframes vt-zoom-in { from { opacity: 0; transform: scale(1.035); filter: blur(6px); } }
+@keyframes vt-glitch {
+  0% { opacity: 0; clip-path: inset(40% 0 45% 0); transform: translateX(-12px); filter: hue-rotate(90deg); }
+  15% { opacity: 1; clip-path: inset(10% 0 70% 0); transform: translateX(10px); }
+  30% { clip-path: inset(60% 0 5% 0); transform: translateX(-6px); filter: hue-rotate(-60deg); }
+  45% { clip-path: inset(0 0 30% 0); transform: translateX(4px); }
+  60% { clip-path: inset(0); transform: none; filter: none; }
+  100% { opacity: 1; clip-path: inset(0); }
+}
+
+/* ============ Смена темы: проявление кругом от точки клика ============ */
+:root[data-vt='theme'] #view { view-transition-name: none; }
+:root[data-vt='theme']::view-transition-old(root) { animation: none; z-index: 1; }
+:root[data-vt='theme']::view-transition-new(root) { animation: vt-reveal calc(760ms / var(--speed)) cubic-bezier(.65, 0, .25, 1) both; z-index: 2; }
+@keyframes vt-reveal {
+  from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 50%)); }
+  to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 50%)); }
+}
+
+/* ============ Поочерёдное появление элементов ============ */
+.stagger { animation-delay: calc(var(--i, 0) * 42ms / var(--speed)); animation-fill-mode: both; animation-duration: calc(560ms / var(--speed)); animation-timing-function: var(--ease); }
+[data-card-anim='rise'] .stagger { animation-name: st-rise; }
+[data-card-anim='fade'] .stagger { animation-name: st-fade; }
+[data-card-anim='scale'] .stagger { animation-name: st-scale; }
+[data-card-anim='blur'] .stagger { animation-name: st-blur; }
+@keyframes st-rise { from { opacity: 0; transform: translateY(18px); } }
+@keyframes st-fade { from { opacity: 0; } }
+@keyframes st-scale { from { opacity: 0; transform: scale(.92); } }
+@keyframes st-blur { from { opacity: 0; filter: blur(8px); } }
+.view-wrap { min-height: 100%; }
+
+/* ============ Индикатор меню ============ */
+.nav { position: relative; }
+.nav-item { z-index: 1; }
+.nav-item.active { background: transparent; border-color: transparent; }
+.nav-item.active::before { display: none; }
+.nav-indicator {
+  position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none;
+  border-radius: var(--r);
+  background: var(--accent-a15);
+  border: var(--bw) solid var(--accent-a30);
+  box-shadow: 0 0 calc(16px * var(--glow-k)) var(--accent-a15);
+  transition: transform calc(520ms / var(--speed)) var(--ease-spring), width calc(420ms / var(--speed)) var(--ease), height calc(420ms / var(--speed)) var(--ease), opacity calc(260ms / var(--speed));
+}
+.nav-indicator::before { content: ''; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px; background: var(--accent); box-shadow: var(--glow); border-radius: 2px; }
+[data-nav='right'] .nav-indicator::before { left: auto; right: -10px; }
+[data-nav='top'] .nav-indicator::before, [data-nav='bottom'] .nav-indicator::before { left: 14px; right: 14px; top: auto; bottom: -7px; width: auto; height: 2px; }
+[data-nav='bottom'] .nav-indicator::before { bottom: auto; top: -7px; }
+
+/* ============ Заставка «Пробуждение» ============ */
+.cryo { position: fixed; inset: 0; z-index: 500; overflow: hidden; cursor: pointer; background: rgba(0, 0, 0, .55); }
+.cryo canvas.cryo-frost, .cryo canvas.cryo-fx { position: absolute; inset: 0; pointer-events: none; }
+.cryo-lid { position: absolute; left: -15%; right: -15%; height: 62%; background: #000; z-index: 5; will-change: transform; }
+.cryo-lid.top { top: 0; border-radius: 0 0 50% 50% / 0 0 40% 40%; box-shadow: 0 40px 70px 40px #000; }
+.cryo-lid.bottom { bottom: 0; border-radius: 50% 50% 0 0 / 40% 40% 0 0; box-shadow: 0 -40px 70px 40px #000; }
+#app.waking { will-change: filter, transform; transform-origin: 50% 42%; }
+
+.cryo-hud { position: absolute; inset: 0; opacity: 0; pointer-events: none; font: 11px/1.6 var(--f-ui); letter-spacing: .18em; color: var(--accent); text-shadow: 0 0 8px var(--accent-a60); }
+.cryo-corner { position: absolute; display: grid; gap: 2px; }
+.cryo-corner.tl { left: 34px; top: 30px; }
+.cryo-corner.tr { right: 34px; top: 30px; text-align: right; }
+.cryo-corner span:last-child { color: color-mix(in srgb, var(--accent) 55%, #fff 0%); opacity: .7; }
+.cryo-vitals { position: absolute; left: 50%; bottom: 46px; transform: translateX(-50%); display: flex; align-items: flex-end; gap: 28px; }
+.cryo-vitals > div { display: grid; gap: 2px; }
+.cryo-vitals small { font-size: 9px; opacity: .65; }
+.cryo-vitals b { font: 700 26px var(--f-head); letter-spacing: .04em; }
+.cryo-ecg { width: 360px; height: 56px; }
+.cryo-sync { width: 220px; }
+.cryo-bar { height: 3px; background: var(--accent-a15); margin-top: 6px; overflow: hidden; }
+.cryo-bar i { display: block; height: 100%; width: 0; background: var(--accent); box-shadow: var(--glow); }
+.cryo-voice { position: absolute; left: 50%; top: calc(42% + 86px); transform: translateX(-50%); text-align: center; opacity: 0; width: min(720px, 90vw); }
+.cryo-voice small { display: block; font: 10px var(--f-ui); letter-spacing: .4em; color: var(--accent); margin-bottom: 8px; }
+.cryo-voice p { margin: 0; font: 400 18px/1.5 var(--f-read); color: #eaf6f0; text-shadow: 0 2px 20px #000; }
+.cryo-logo { position: absolute; left: 0; right: 0; top: calc(42% + 150px); text-align: center; opacity: 0; font: 700 clamp(28px, 4vw, 54px)/1 var(--f-head); text-transform: uppercase; color: #fff; text-shadow: 0 0 30px var(--accent-a60), 0 2px 30px #000; white-space: nowrap; }
+.cryo-skip { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font: 10px var(--f-ui); letter-spacing: .22em; text-transform: uppercase; color: #fff; opacity: 0; z-index: 6; }
+
+.orb-arrive { animation: orb-arrive calc(1.1s / var(--speed)) var(--ease) both !important; }
+@keyframes orb-arrive { 0% { transform: scale(2.2); filter: brightness(2.4); } 100% { transform: scale(1); filter: none; } }
+
+.firstrun { animation: fade-in calc(600ms / var(--speed)) var(--ease) both; }
+.firstrun.out { animation: fr-out calc(450ms / var(--speed)) var(--ease) both; }
+@keyframes fr-out { to { opacity: 0; transform: scale(1.02); filter: blur(6px); } }
+.preset-badge { margin-left: 8px; font: 700 9px var(--f-ui); letter-spacing: .14em; padding: 2px 6px; border-radius: 3px; background: var(--accent); color: var(--bg); vertical-align: 3px; }
+
+/* ============ Курсор-свечение ============ */
+#cursor-glow {
+  position: fixed; left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%;
+  pointer-events: none; z-index: 1000; display: none;
+  background: radial-gradient(circle, var(--accent-2) 0 18%, var(--accent) 30%, var(--accent-a30) 50%, transparent 72%);
+  box-shadow: 0 0 22px var(--accent-a60);
+  transition: scale .15s;
+}
+[data-cursor='glow'] #cursor-glow { display: block; }
+
+/* ============ Модалки и поповеры плавнее ============ */
+.modal { animation: modal-in calc(380ms / var(--speed)) var(--ease-spring) both; }
+.popover { animation: pop-in calc(220ms / var(--speed)) var(--ease) both; transform-origin: top; }
+@keyframes pop-in { from { opacity: 0; transform: translateY(-6px) scale(.97); } }
+.toast { animation: toast-in calc(420ms / var(--speed)) var(--ease-spring) both; }
+
+.cryo canvas.cryo-frost, .cryo canvas.cryo-fx { width: 100%; height: 100%; }
+

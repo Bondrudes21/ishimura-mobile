@@ -1,0 +1,17 @@
+{
+  "appId": "com.bondrudes21.ishimura",
+  "appName": "Архив Ишимуры",
+  "webDir": "www",
+  "backgroundColor": "#050a08",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true,
+    "adjustMarginsForEdgeToEdge": "disable"
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": false },
+    "SystemBars": { "style": "DARK", "insetsHandling": "css" },
+    "SplashScreen": { "launchAutoHide": true }
+  }
+}
