@@ -1,5 +1,6 @@
 # Версия для iPhone (PWA): сайт https://bondrudes21.github.io/ishimura-mobile/
-# Обновляется сама при каждом push в main.
+# Обновляется сама при каждом push в main, если изменились файлы сайта (не android/ и не .md).
+# Источник Pages в настройках репозитория должен быть «GitHub Actions».
 name: Сайт для iPhone
 
 on:
