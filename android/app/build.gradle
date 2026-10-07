@@ -1,8 +1,11 @@
 apply plugin: 'com.android.application'
 
-// Подпись релиза: ключ передаёт GitHub Actions через переменные окружения (секреты репозитория).
-// Без них APK подписывается отладочным ключом — годится только для проверки.
-def releaseKeystore = System.getenv("ANDROID_KEYSTORE_FILE")
+// Подпись релиза. Ключ лежит в репозитории (android/keystore) — так все версии APK подписаны
+// одним ключом и ставятся поверх друг друга. Его можно подменить переменными окружения.
+def releaseKeystore = System.getenv("ANDROID_KEYSTORE_FILE") ?: rootProject.file("keystore/ishimura-release.jks").path
+def keystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: "ishimura-archive"
+def keyAliasName = System.getenv("ANDROID_KEY_ALIAS") ?: "ishimura"
+def keyPasswordValue = System.getenv("ANDROID_KEY_PASSWORD") ?: "ishimura-archive"
 
 android {
     namespace = "com.bondrudes21.ishimura"
@@ -23,19 +26,17 @@ android {
     }
     signingConfigs {
         release {
-            if (releaseKeystore) {
-                storeFile file(releaseKeystore)
-                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
-                keyAlias System.getenv("ANDROID_KEY_ALIAS")
-                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
-            }
+            storeFile file(releaseKeystore)
+            storePassword keystorePassword
+            keyAlias keyAliasName
+            keyPassword keyPasswordValue
         }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig releaseKeystore ? signingConfigs.release : signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
